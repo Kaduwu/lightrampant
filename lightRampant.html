@@ -1,0 +1,264 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    body {
+        padding: 0;
+        margin: 0;
+    }
+    button {
+        margin-left: 10%;
+    }
+    #lol {
+        border: 1px solid black;
+        margin-top: 50px;
+        margin-left: 50px;
+        margin-bottom: 10px;
+    }
+    .square {
+        width: 32px;
+        height: 32px;
+        border: 1px solid black;
+    }
+    svg {
+        border: 1px solid black;
+        position: absolute;
+        margin-left: 50px;
+    }
+    #overdiv {
+        transition: 0.5s;
+    }
+</style>
+<body>
+<div id="overdiv">
+    <svg height="512" width="512" id="svg">
+    </svg>
+    <div id="lol"></div>
+</div>
+<button onclick="electRandomLight()">Light consume you</button>
+
+</body>
+<script>
+    const x = 512;
+    const y = 512;
+
+    const field = document.getElementById("lol")
+    field.style.width = x.toString();
+    field.style.height = y.toString();
+
+    const svg = document.getElementById("svg")
+
+    class entity {
+        color;
+        id;
+        div;
+        lightcircle;
+        bigcircle;
+        tether;
+        constructor(x, y, id, color='#ffffff') {
+            this.id = id
+            this.color = color
+
+            this.lightcircle = new circle(x, y, 32, false)
+            this.bigcircle = new circle(x, y, 64, true)
+
+            this.tether = new tether(x, y, x, y)
+
+            this.div = document.createElement("div")
+            this.div.className = "square"
+            this.translation(x, y)
+            this.div.style.position = "absolute"
+            this.div.style.backgroundColor = this.color
+            field.appendChild(this.div)
+
+            this.reset()
+        }
+
+        translation(x, y) {
+            this.x = x;
+            this.y = y;
+            this.div.style.top = this.y + "px";
+            this.div.style.left = this.x + "px";
+        }
+
+        electLight() {
+            this.lightcircle.set_visibility(true);
+        }
+
+        electBig() {
+            this.bigcircle.set_visibility(true);
+        }
+
+        setTether(target) {
+            this.tether.set_tether(this.x, this.y, target.x, target.y)
+        }
+
+        reset() {
+            this.lightcircle.set_visibility(false);
+            this.bigcircle.set_visibility(false);
+            this.tether.set_tether(this.x, this.y, this.x, this.y)
+        }
+    }
+
+    class marker {
+        div;
+        color;
+        text;
+        x;
+        y;
+        constructor(x, y, text, color, bgColor, round) {
+            this.text = text;
+            this.color = color;
+            this.x = x;
+            this.y = y;
+
+            this.div = document.createElement("div")
+            this.div.className = "square"
+            this.translation(x, y)
+            this.div.style.position = "absolute";
+            this.div.style.display = "table"
+            this.div.style.width = "40px";
+            this.div.style.height = "40px";
+            this.div.style.backgroundColor = bgColor;
+
+            let span = document.createElement("span")
+            span.innerText = text;
+            span.style.color = color;
+            span.style.display = "table-cell";
+            span.style.verticalAlign = "middle";
+            this.div.appendChild(span);
+            this.div.style.fontSize = "32px";
+            this.div.style.textAlign = "center";
+            this.div.style.border = "4px solid " + color;
+            if (round) {
+                this.div.style.borderRadius = "32px"
+            }
+            field.appendChild(this.div)
+        }
+
+        translation(x, y) {
+            this.x = x;
+            this.y = y;
+            this.div.style.top = this.y + "px";
+            this.div.style.left = this.x + "px";
+        }
+    }
+
+    class tether {
+        constructor(x1, y1, x2, y2) {
+            x1 -= 34
+            x2 -= 34
+            y1 -= 34
+            y2 -= 34
+            this.line = document.createElementNS('http://www.w3.org/2000/svg','line');
+            this.line.setAttribute('x1', x1.toString())
+            this.line.setAttribute('y1', y1.toString())
+            this.line.setAttribute('x2', x2.toString())
+            this.line.setAttribute('y2', y2.toString())
+            this.line.setAttribute('stroke', 'gold')
+            this.line.setAttribute('stroke-width', '4')
+            svg.append(this.line)
+        }
+
+        set_tether(x1, y1, x2, y2) {
+            x1 -= 34
+            x2 -= 34
+            y1 -= 34
+            y2 -= 34
+            this.line.setAttribute('x1', x1.toString())
+            this.line.setAttribute('y1', y1.toString())
+            this.line.setAttribute('x2', x2.toString())
+            this.line.setAttribute('y2', y2.toString())
+        }
+    }
+
+    class circle {
+        constructor(x, y, r=64, purple=true) {
+            x -= 34
+            y -= 34
+            this.c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+            this.c.setAttribute('r', r.toString())
+            this.c.setAttribute('cx', x.toString())
+            this.c.setAttribute('cy', y.toString())
+            if(purple) {
+                this.c.setAttribute('stroke', '#822fc2')
+                this.c.setAttribute('fill', '#dface6')
+            } else {
+                this.c.setAttribute('stroke', '#bfa134')
+                this.c.setAttribute('fill', '#f5cf47')
+            }
+            svg.append(this.c)
+        }
+
+        set_center(x, y) {
+            x -= 34
+            y -= 34
+            this.c.setAttribute('cx', x.toString())
+            this.c.setAttribute('cy', y.toString())
+        }
+
+        set_visibility(boo) {
+            if (boo) {
+                this.c.setAttribute('visibility', 'visible');
+            } else {
+                this.c.setAttribute('visibility', 'hidden');
+            }
+        }
+    }
+
+    let cools = [
+        t1 = new entity(288, 160, 0, '#689bde'),
+        d4 = new entity(368, 208, 7, '#b54c4c'),
+        t2 = new entity(416, 288, 1, '#689bde'),
+        d2 = new entity(368, 368, 5, '#b54c4c'),
+        h2 = new entity(288, 416, 3, '#51bd6e'),
+        d1 = new entity(208, 368, 4, '#b54c4c'),
+        h1 = new entity(160, 288, 2, '#51bd6e'),
+        d3 = new entity(208, 208, 6, '#b54c4c')
+    ]
+
+    let markers = [
+        m_A = new marker(280, 60, "A", "#e32938", "#fccaca", false),
+        m_C = new marker(280, 506, "C", "#6273de", "#cad1fc", false),
+        m_1 = new marker(80, 140, "1", "#e32938", "#fccaca", true),
+        m_2 = new marker(490, 140, "2", "#f5bf42", "#f5e8bc", true),
+        m_3 = new marker(490, 420, "3", "#6273de", "#cad1fc", true),
+        m_4 = new marker(80, 420, "4", "#7831b0", "#c298e3", true)
+    ]
+
+    function electRandomLight() {
+        for (let i = 0; i < cools.length; i++) {
+            cools[i].reset();
+        }
+        let random1 = Math.floor(Math.random()*8)
+        let random2 = Math.floor(Math.random()*7)
+        if (random1 === random2) {
+            random2++
+        }
+        let newCools = []
+        for (let i = 0; i < cools.length; i++) {
+            if (i !== random1 && i !== random2) {
+                newCools.push(cools[i])
+            }
+        }
+        cools[random1].electBig();
+        cools[random2].electBig();
+        let random3 = Math.floor(Math.random()*6)
+        for (let i = 0; i < newCools.length; i++) {
+            if ((i === random3) || (i === random3 + 1) || (random3 === 5 && i === 0)) {
+                newCools[i].electLight();
+            }
+            if (i !== newCools.length-1) {
+                newCools[i].setTether(newCools[i+1])
+            } else {
+                newCools[i].setTether(newCools[0])
+            }
+        }
+    }
+</script>
+</html>
