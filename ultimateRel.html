@@ -1,0 +1,28 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <button onclick="ultimateRelativity()">Past, Present, Fujah</button>
+    <div id="1"></div>
+    <div id="debuffs" style="display: flex;"></div>
+
+</body>
+<script src="classes.js"></script>
+<script src="utility.js"></script>
+<script>
+    const div = document.getElementById("1");
+    const debuffs = document.getElementById("debuffs");
+
+    function ultimateRelativity() {
+        div.innerHTML = "";
+        debuffs.innerHTML = "";
+        let utlimate = new ultimate_relativity(div, debuffs);
+    }
+
+    ultimateRelativity();
+</script>
+</html>

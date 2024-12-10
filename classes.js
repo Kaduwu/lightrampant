@@ -26,7 +26,7 @@ class field {
 }
 
 class ultimate_relativity {
-    constructor(parent) {
+    constructor(parent, debuffParent) {
         this.field = new field(parent)
         this.coords = shiftArray([
             [256, 128],
@@ -48,6 +48,43 @@ class ultimate_relativity {
             this.field.createTraffic(this.coords[6][0],this.coords[6][1], 'purple'),
             this.field.createTraffic(this.coords[7][0],this.coords[7][1]),
         ]
+        let rand = Math.floor(Math.random() * 10)
+        let time = "";
+        if (rand < 1) {
+            this.fire = new debuff("ice", "21s", debuffParent)
+        } else {
+            if (rand < 4) {
+                time = "11s";
+            } else if (rand < 7) {
+                time = "21s";
+            } else {
+                time = "31s";
+            }
+            this.fire = new debuff("fire", time, debuffParent)
+        }
+        if (rand < 7) {
+            this.return = new debuff("return", "16s", debuffParent)
+        } else {
+            this.return = new debuff("return", "26s", debuffParent)
+        }
+        let stackRand = Math.floor(Math.random() * 9)
+        if (0 < stackRand && stackRand < 4) {
+            let time2 = stackRand + "1s";
+            if (time != time2) {
+                this.stack = new debuff("stack", time2, debuffParent)
+            }
+        } 
+        let returnRand = Math.floor(Math.random() * 5)
+        if (rand < 7) {
+            if (returnRand < 1) {
+                returnRand = "water"
+            } else {
+                returnRand = "eruption"
+            }
+        } else {
+            returnRand = "eye"
+        }
+        this.end = new debuff(returnRand, "43s", debuffParent)
     }
 }
 
@@ -131,3 +168,23 @@ class tether {
     }
 }
 
+class debuff {
+    constructor(icon, time, parent) {
+        this.div = document.createElement('div');
+        this.icon = document.createElement('img');
+        this.text = document.createElement('p');
+
+        this.div.style.margin = "4px"
+        this.icon.src = 'icons/' + icon + '.png';
+        this.text.innerText = time;
+        this.text.style.margin = "0";
+        this.text.style.fontSize = "24px";
+        this.text.style.textAlign = "center";
+        this.text.style.fontFamily = "Arial, Helvetica, sans-serif";
+
+        this.div.appendChild(this.icon);
+        this.div.appendChild(this.text);
+
+        parent.appendChild(this.div);
+    }
+}
